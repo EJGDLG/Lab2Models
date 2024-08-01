@@ -1,49 +1,82 @@
-import pygame 
-from pygame.locals import * 
-from gl import Renderer
-from shaders import vertexShader
+import pygame
+from pygame.locals import *
+from GL import *
 from model import Model
+from shaders import VertexShader
 
 width = 960
 height = 540
 
+
 screen = pygame.display.set_mode((width, height))
-clock = pygame.time.Clock()
+clock = pygame.time.Clock() 
+
+#Cargar modelo
+modelo1 = Model("Porsche_911_GT2.obj")
+
+modelo1.translate[2] = -30
+modelo1.scale[0] = 5
+modelo1.scale[1] = 5
+modelo1.scale[2] = 5
 
 rend = Renderer(screen)
-rend.vertexShader = vertexShader
+rend.vertexShader = VertexShader 
 
-model1= Model("Porsche_911_GT2.obj")
-model1.translate[0] = width / 2
-model1.translate[1] = height / 4
-
-model1.scale[0] = 10
-model1.scale[1] = 10
-model1.scale[2] = 10
-
-rend.models.append(model1)
+rend.glColor(0, 0, 1)  
+rend.glClearColor(0, 0, 0)  
 
 
+rend.models.append(modelo1)
 isRunning = True
 while isRunning:
     
     for event in pygame.event.get():
+     
         if event.type == pygame.QUIT:
             isRunning = False
+       
         elif event.type == pygame.KEYDOWN:
+           
             if event.key == pygame.K_ESCAPE:
                 isRunning = False
-    
-    rend.glClear()
+
+            elif event.key == pygame.K_RIGHT:
+                rend.camera.translate[0] -= 1
+            elif event.key == pygame.K_LEFT:
+                rend.camera.translate[0] += 1 
+            elif event.key == pygame.K_UP:
+                modelo1.rotate[0] += 10
+            elif event.key == pygame.K_DOWN:
+                modelo1.rotate[0] -= 10
+            elif event.key  == pygame.K_k:                
+                modelo1.scale[0] += 2
+                modelo1.scale[1] += 2
+                modelo1.scale[2] += 2
+            elif event.key == pygame.K_w:
+                modelo1.translate[1] += 5
+            elif event.key == pygame.K_a:
+                modelo1.translate[0] -= 5
+            elif event.key == pygame.K_s:
+                modelo1.translate[1] -= 5
+            elif event.key == pygame.K_d:
+                modelo1.translate[0] += 5
+            elif event.key == pygame.K_1:
+                rend.primitiveType = POINTS
+            elif event.key == pygame.K_2:
+                rend.primitiveType = LINES          
+
+
+    rend.glClear()  
+
     
     rend.glRender()
-    
-    pygame.display.flip()
-    clock.tick(60)
-    
-rend.glGenerateFrameBuffer("output.bmp")
 
-pygame.quit()
+    pygame.display.flip()  
+    clock.tick(60)  
+
+rend.generateFrameBuffer("./output.bmp")
+pygame.quit()  
+
 
                 
          
